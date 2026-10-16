@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript Curriculum & Capstone Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #0b0f19;
+      --card-bg: #151d2e;
+      --card-border: #23304a;
+      --card-hover: #1c263c;
+      --primary: #38bdf8;
+      --primary-hover: #0284c7;
+      --accent: #818cf8;
+      --accent-badge: #4338ca;
+      --success: #34d399;
+      --warning: #fbbf24;
+      --danger: #f87171;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --terminal-bg: #070b13;
+      --terminal-border: #1e293b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background-color: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--primary);
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(to right, #ffffff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 1rem;
+      max-width: 800px;
+    }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 1024px) {
+      .layout-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .cards-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .project-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.2s ease-in-out;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .project-card:hover {
+      border-color: #3b82f6;
+      background: var(--card-hover);
+    }
+
+    .project-card.highlight {
+      border-color: rgba(56, 189, 248, 0.5);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.08);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .card-title-group h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .file-tag {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8rem;
+      color: var(--primary);
+      background: rgba(56, 189, 248, 0.1);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .prompt-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(251, 191, 36, 0.15);
+      border: 1px solid rgba(251, 191, 36, 0.4);
+      color: var(--warning);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .card-description {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+
+    button.btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: none;
+    }
+
+    button.btn-primary {
+      background: #2563eb;
+      color: #ffffff;
+    }
+
+    button.btn-primary:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
+
+    button.btn-prompt {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      color: #ffffff;
+    }
+
+    button.btn-prompt:hover {
+      background: linear-gradient(135deg, #b45309, #92400e);
+      transform: translateY(-1px);
+    }
+
+    button.btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      border: 1px solid var(--card-border);
+    }
+
+    button.btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+    }
+
+    /* Terminal Console */
+    .terminal-section {
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 24px;
+      height: calc(100vh - 48px);
+      background: var(--terminal-bg);
+      border: 1px solid var(--terminal-border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    @media (max-width: 1024px) {
+      .terminal-section {
+        position: relative;
+        top: 0;
+        height: 600px;
+        margin-top: 20px;
+      }
+    }
+
+    .terminal-header {
+      background: #111827;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--terminal-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .terminal-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      color: #e2e8f0;
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot.red { background: #ef4444; }
+    .dot.yellow { background: #f59e0b; }
+    .dot.green { background: #10b981; }
+
+    .terminal-controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    .terminal-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Fira Code', monospace;
+    }
+
+    .terminal-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+    }
+
+    .terminal-body {
+      flex: 1;
+      padding: 16px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      overflow-y: auto;
+      background: #050810;
+      color: #d1d5db;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .log-line {
+      margin-bottom: 6px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .log-time {
+      color: #64748b;
+      user-select: none;
+      font-size: 0.75rem;
+      min-width: 65px;
+    }
+
+    .log-prefix {
+      color: var(--primary);
+      user-select: none;
+      font-weight: bold;
+    }
+
+    .log-content {
+      color: #e2e8f0;
+      flex: 1;
+    }
+
+    .log-content.section-header {
+      color: var(--primary);
+      font-weight: 600;
+      border-bottom: 1px dashed #23304a;
+      padding-bottom: 4px;
+      margin-top: 8px;
+    }
+
+    .log-content.highlight {
+      color: var(--success);
+    }
+
+    .log-content.warn {
+      color: var(--warning);
+    }
+
+    .log-content.error {
+      color: var(--danger);
+    }
+
+    .global-toolbar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <div class="badge-pill">JavaScript Curriculum & Capstone Project</div>
+      <h1>Interactive Testing & Analytics Dashboard</h1>
+      <p class="subtitle">
+        Execute and test JavaScript curriculum assignments (1–6) and the interactive Capstone Dashboard.
+        Assignments utilizing browser <code>prompt()</code> will trigger native popups to accept input.
+      </p>
+    </header>
+
+    <div class="global-toolbar">
+      <button class="btn btn-primary" onclick="runAllSequential()">
+        ⚡ Run All Scripts Sequentially
+      </button>
+      <button class="btn btn-secondary" onclick="clearTerminal()">
+        🧹 Clear Output
+      </button>
+    </div>
+
+    <div class="layout-grid">
+      <!-- Cards Section -->
+      <div class="cards-section">
+        
+        <!-- Assignment 1 -->
+        <div class="project-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h3>Assignment 1 <span class="file-tag">assignment1.js</span></h3>
+            </div>
+          </div>
+          <div class="card-description">
+            Variable declarations using <code>var</code>, <code>let</code>, and <code>const</code> for string, number, boolean, and skills array with exact <code>typeof</code> inspection.
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-primary" onclick="runScript('assignment1.js', executeAssignment1)">
+              ▶ Run Assignment 1
+            </button>
+          </div>
+        </div>
+
+        <!-- Assignment 2 -->
+        <div class="project-card highlight">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h3>Assignment 2 <span class="file-tag">assignment2.js</span></h3>
+            </div>
+            <span class="prompt-badge">💬 Interactive prompt()</span>
+          </div>
+          <div class="card-description">
+            Captures bill amount and tip percentage via browser <code>prompt()</code>, explicitly converts values using <code>Number()</code>, and computes subtotal, tip, and total.
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-prompt" onclick="runScript('assignment2.js', executeAssignment2)">
+              💬 Run with prompt() Input
+            </button>
+          </div>
+        </div>
+
+        <!-- Assignment 3 -->
+        <div class="project-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h3>Assignment 3 <span class="file-tag">assignment3.js</span></h3>
+            </div>
+          </div>
+          <div class="card-description">
+            Evaluates numerical score (85) to determine letter grade via <code>if...else</code>, assesses through a <code>switch</code> statement, and uses ternary operator for pass/fail status.
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-primary" onclick="runScript('assignment3.js', executeAssignment3)">
+              ▶ Run Assignment 3
+            </button>
+          </div>
+        </div>
+
+        <!-- Assignment 4 -->
+        <div class="project-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h3>Assignment 4 <span class="file-tag">assignment4.js</span></h3>
+            </div>
+          </div>
+          <div class="card-description">
+            Loop control mechanisms: <code>for</code> loop multiplication table (5x up to 5), <code>while</code> loop with <code>break</code> to find first number &gt; 10 divisible by 6, and <code>do...while</code> with <code>continue</code> skipping iterations.
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-primary" onclick="runScript('assignment4.js', executeAssignment4)">
+              ▶ Run Assignment 4
+            </button>
+          </div>
+        </div>
+
+        <!-- Assignment 5 -->
+        <div class="project-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h3>Assignment 5 <span class="file-tag">assignment5.js</span></h3>
+            </div>
+          </div>
+          <div class="card-description">
+            Standard function and arrow function with default parameters (5, 4), custom invocation (10, 3), and block-scoped <code>let</code> error catching with <code>try...catch</code>.
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-primary" onclick="runScript('assignment5.js', executeAssignment5)">
+              ▶ Run Assignment 5
+            </button>
+          </div>
+        </div>
+
+        <!-- Assignment 6 -->
+        <div class="project-card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h3>Assignment 6 <span class="file-tag">assignment6.js</span></h3>
+            </div>
+          </div>
+          <div class="card-description">
+            Array methods: product objects iteration via <code>forEach()</code>, filtering affordable products under $50 via <code>filter()</code>, and transforming into uppercase tags via <code>map()</code>.
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-primary" onclick="runScript('assignment6.js', executeAssignment6)">
+              ▶ Run Assignment 6
+            </button>
+          </div>
+        </div>
+
+        <!-- Capstone Project -->
+        <div class="project-card highlight">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h3>Capstone Project <span class="file-tag">capstone_project.js</span></h3>
+            </div>
+            <span class="prompt-badge">💬 Interactive prompt() • Capstone</span>
+          </div>
+          <div class="card-description">
+            Comprehensive Product Inventory & Analytics Dashboard: interactive product addition via <code>prompt()</code>, tiered categorization (Budget/Standard/Premium), roster processing, total valuation, and filtered reporting.
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-prompt" onclick="runScript('capstone_project.js', executeCapstone)">
+              🚀 Launch Capstone Dashboard
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Live Terminal Output -->
+      <div class="terminal-section">
+        <div class="terminal-header">
+          <div class="terminal-title">
+            <div class="terminal-dots">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+            </div>
+            <span>Console Output & Analytics</span>
+          </div>
+          <div class="terminal-controls">
+            <button class="terminal-btn" onclick="copyConsoleOutput()">📋 Copy</button>
+            <button class="terminal-btn" onclick="clearTerminal()">🧹 Clear</button>
+          </div>
+        </div>
+        <div class="terminal-body" id="terminal-body">
+          <div class="log-line">
+            <span class="log-time">[System]</span>
+            <span class="log-prefix">❯</span>
+            <span class="log-content">JavaScript Curriculum Runner ready. Click any assignment button on the left to execute.</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Custom on-screen console capturing
+    const terminalBody = document.getElementById('terminal-body');
+    const originalConsoleLog = console.log;
+    const originalConsoleError = console.error;
+    const originalConsoleWarn = console.warn;
+
+    function getFormattedTime() {
+      const now = new Date();
+      return now.toTimeString().split(' ')[0];
+    }
+
+    function appendToTerminal(message, type = 'info') {
+      const logLine = document.createElement('div');
+      logLine.className = 'log-line';
+
+      const timeSpan = document.createElement('span');
+      timeSpan.className = 'log-time';
+      timeSpan.textContent = `[${getFormattedTime()}]`;
+
+      const prefixSpan = document.createElement('span');
+      prefixSpan.className = 'log-prefix';
+      prefixSpan.textContent = '❯';
+
+      const contentSpan = document.createElement('span');
+      contentSpan.className = 'log-content';
+
+      const strMessage = typeof message === 'object' ? JSON.stringify(message, null, 2) : String(message);
+
+      if (strMessage.startsWith('---') || strMessage.startsWith('===') || strMessage.startsWith('Financial Analytics')) {
+        contentSpan.classList.add('section-header');
+      } else if (strMessage.includes('Passed') || strMessage.includes('Total Inventory Value')) {
+        contentSpan.classList.add('highlight');
+      } else if (type === 'error' || strMessage.includes('Error:')) {
+        contentSpan.classList.add('error');
+      } else if (type === 'warn') {
+        contentSpan.classList.add('warn');
+      }
+
+      contentSpan.textContent = strMessage;
+
+      logLine.appendChild(timeSpan);
+      logLine.appendChild(prefixSpan);
+      logLine.appendChild(contentSpan);
+
+      terminalBody.appendChild(logLine);
+      terminalBody.scrollTop = terminalBody.scrollHeight;
+    }
+
+    console.log = function(...args) {
+      originalConsoleLog.apply(console, args);
+      args.forEach(arg => appendToTerminal(arg, 'info'));
+    };
+
+    console.error = function(...args) {
+      originalConsoleError.apply(console, args);
+      args.forEach(arg => appendToTerminal(arg, 'error'));
+    };
+
+    console.warn = function(...args) {
+      originalConsoleWarn.apply(console, args);
+      args.forEach(arg => appendToTerminal(arg, 'warn'));
+    };
+
+    function clearTerminal() {
+      terminalBody.innerHTML = `
+        <div class="log-line">
+          <span class="log-time">[System]</span>
+          <span class="log-prefix">❯</span>
+          <span class="log-content">Terminal cleared.</span>
+        </div>
+      `;
+    }
+
+    function copyConsoleOutput() {
+      const text = Array.from(terminalBody.querySelectorAll('.log-content'))
+        .map(el => el.textContent)
+        .join('\n');
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Console output copied to clipboard!');
+      });
+    }
+
+    // Direct isolated runners matching exact file contents
+    function executeAssignment1() {
+      var userName = "Alice";
+      let age = 25;
+      const isEmployed = true;
+      const skills = ["HTML", "CSS", "JavaScript"];
+
+      console.log(`Name: ${userName} (Type: ${typeof userName})`);
+      console.log(`Age: ${age} (Type: ${typeof age})`);
+      console.log(`Is Employed: ${isEmployed} (Type: ${typeof isEmployed})`);
+      console.log(`Skills: ${JSON.stringify(skills).replace(/,/g, ", ")} (Type: ${typeof skills})`);
+    }
+
+    function executeAssignment2() {
+      const billInput = prompt("Enter bill amount ($):", "100") || "100";
+      const tipPercentInput = prompt("Enter tip percentage (%):", "15") || "15";
+
+      const billAmount = Number(billInput);
+      const tipPercentage = Number(tipPercentInput);
+
+      const calculatedTip = (billAmount * tipPercentage) / 100;
+      const totalAmount = billAmount + calculatedTip;
+
+      console.log(`Subtotal: $${billAmount}`);
+      console.log(`Tip Percentage: ${tipPercentage}%`);
+      console.log(`Calculated Tip: $${calculatedTip}`);
+      console.log(`Total Amount to Pay: $${totalAmount}`);
+    }
+
+    function executeAssignment3() {
+      const score = 85;
+
+      let letterGrade;
+      if (score >= 90) {
+        letterGrade = "A";
+      } else if (score >= 80) {
+        letterGrade = "B";
+      } else if (score >= 70) {
+        letterGrade = "C";
+      } else if (score >= 60) {
+        letterGrade = "D";
+      } else {
+        letterGrade = "F";
+      }
+
+      let evaluatedGrade;
+      switch (letterGrade) {
+        case "A": evaluatedGrade = "A"; break;
+        case "B": evaluatedGrade = "B"; break;
+        case "C": evaluatedGrade = "C"; break;
+        case "D": evaluatedGrade = "D"; break;
+        case "F":
+        default: evaluatedGrade = "F"; break;
+      }
+
+      const status = score >= 60 ? "Passed" : "Failed";
+
+      console.log(`Score: ${score}`);
+      console.log(`Grade: ${evaluatedGrade}`);
+      console.log(`Status: ${status}`);
+    }
+
+    function executeAssignment4() {
+      console.log("--- For Loop: Multiplication Table of 5 ---");
+      for (let i = 1; i <= 5; i++) {
+        console.log(`5 x ${i} = ${5 * i}`);
+      }
+
+      console.log("\n--- While Loop: Break Statement ---");
+      let candidate = 11;
+      while (true) {
+        if (candidate % 6 === 0) {
+          console.log(`Found: ${candidate}`);
+          break;
+        }
+        candidate++;
+      }
+
+      console.log("\n--- Do...While Loop: Continue Statement ---");
+      let count = 0;
+      do {
+        count++;
+        if (count === 3) {
+          console.log(`Skipping iteration ${count}`);
+          continue;
+        }
+        console.log(`Iteration: ${count}`);
+      } while (count < 5);
+    }
+
+    function executeAssignment5() {
+      function calculateRectangleArea(length = 5, width = 4) {
+        return length * width;
+      }
+
+      const calculateAreaArrow = (length = 5, width = 4) => length * width;
+
+      console.log(`Standard Function (Default: 5, 4): Area = ${calculateRectangleArea()}`);
+      console.log(`Arrow Function (Custom: 10, 3): Area = ${calculateAreaArrow(10, 3)}`);
+
+      {
+        let blockVar = "I exist only inside this block scope";
+      }
+
+      try {
+        console.log(blockVar);
+      } catch (error) {
+        console.log(`Scope Test Error: ${error}`);
+      }
+    }
+
+    function executeAssignment6() {
+      const products = [
+        { name: "Laptop", price: 800 },
+        { name: "Mouse", price: 25 },
+        { name: "Keyboard", price: 45 }
+      ];
+
+      console.log("--- Product List (forEach) ---");
+      products.forEach(product => {
+        console.log(`Product: ${product.name}, Price: $${product.price}`);
+      });
+
+      console.log("\n--- Affordable Products Under $50 (filter) ---");
+      const itemsUnder50 = products.filter(product => product.price < 50);
+      console.log(itemsUnder50);
+
+      console.log("\n--- Formatted Product Tags (map) ---");
+      const productTags = products.map(product => `${product.name.toUpperCase()} costs $${product.price}`);
+      console.log(productTags);
+    }
+
+    function executeCapstone() {
+      console.log("--- Initializing Inventory System");
+
+      const inventory = [
+        { name: "Laptop", price: 800 },
+        { name: "Mouse", price: 25 }
+      ];
+
+      const inputName = prompt("Enter new product name:", "Monitor") || "Monitor";
+      const inputPrice = prompt("Enter product price ($):", "150") || "150";
+
+      const sanitizedName = String(inputName.trim() || "Monitor");
+      const sanitizedPrice = Number(inputPrice.trim() || 150);
+
+      inventory.push({ name: sanitizedName, price: sanitizedPrice });
+
+      console.log(`[Prompt executed: User adds "${sanitizedName}" at "$${sanitizedPrice}"]`);
+
+      function categorizeProduct(price) {
+        switch (true) {
+          case price >= 500:
+            return "Premium";
+          case price >= 100 && price <= 499:
+            return "Standard";
+          case price < 100:
+          default:
+            return "Budget";
+        }
+      }
+
+      console.log("Processing Inventory Roster (forEach)");
+      inventory.forEach(item => {
+        const category = categorizeProduct(item.price);
+        console.log(`* Item: ${item.name} ($${item.price}) -> Category: ${category}`);
+      });
+
+      const totalInventoryValue = inventory.reduce((total, item) => total + item.price, 0);
+
+      const affordableItems = inventory
+        .filter(item => item.price < 200)
+        .map(item => item.name);
+
+      const formattedReportList = inventory.map(
+        item => `${item.name.toUpperCase()}: $${item.price}`
+      );
+
+      console.log("Financial Analytics");
+      console.log(`Total Inventory Value: $${totalInventoryValue}`);
+      console.log(`Filtered Affordable Items (Under $200): ${JSON.stringify(affordableItems).replace(/,/g, ", ")}`);
+      console.log(`Formatted Report List: ${JSON.stringify(formattedReportList).replace(/,/g, ", ")}`);
+    }
+
+    function runScript(filename, fn) {
+      console.log(`=== Executing ${filename} ===`);
+      try {
+        fn();
+      } catch (err) {
+        console.error(`Runtime Error in ${filename}: ${err.message}`);
+      }
+    }
+
+    function runAllSequential() {
+      clearTerminal();
+      console.log("=== Running All Assignments (1 to 6 & Capstone) ===");
+      runScript('assignment1.js', executeAssignment1);
+      runScript('assignment2.js', executeAssignment2);
+      runScript('assignment3.js', executeAssignment3);
+      runScript('assignment4.js', executeAssignment4);
+      runScript('assignment5.js', executeAssignment5);
+      runScript('assignment6.js', executeAssignment6);
+      runScript('capstone_project.js', executeCapstone);
+    }
+  </script>
+</body>
+</html>
